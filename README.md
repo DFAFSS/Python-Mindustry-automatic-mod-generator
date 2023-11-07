@@ -1,1 +1,11 @@
-# Python-Mindustry-automatic-mod-generator
+# Python Mindustry模组生成器
+### 已实现的功能有:
+- 创建模组
+- 创建内容
+  - 创建物品
+  - 创建墙
+  - 创建矿石
+- 导出模组
+
+### 注意：
+#### 该版本模组制作器处于测试版本，仍有部分缺陷
