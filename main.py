@@ -13,6 +13,7 @@ root.withdraw()
 Disposition = ""
 create = 0
 mod_type = 0
+json_encode = ""
 
 test = ""
 initialize_name = ""
@@ -63,8 +64,64 @@ block_ore_oreDefault_Str = ""
 block_ore_oreThreshold = ""
 block_ore_oreScale = ""
 
+Turret_type = 0
+#物品炮塔
+Item_Turret_jump = True
+Item_Turret_jump_item = True
+Item_Turret_jumpStr = ""
+Item_Turret_jump_item_Str = ""
+Item_Turret_steps = 0
+Item_Turret_name = ""
+Item_Turret_description = ""
+Item_Turret_shootSound = ""
+Item_Turret_targetAirStr = ""
+Item_Turret_targetAir = ""
+Item_Turret_targetGroundStr = ""
+Item_Turret_targetGround = ""
+Item_Turret_health = ""
+Item_Turret_reloadTime = ""
+Item_Turret_size = ""
+Item_Turret_spread = ""
+Item_Turret_shootCone = ""
+Item_Turret_recoilAmount = ""
+Item_Turret_maxAmmo = ""
+Item_Turret_rotateSpeed = ""
+Item_Turret_inaccuracy = ""
+Item_Turret_range = ""
+
+Item_Turret_ammo_item = ""
+Item_Turret_ammo_type = ""#暂时没用
+Item_Turret_ammo_speed = ""
+Item_Turret_ammo_damage = ""
+Item_Turret_ammo_width = ""
+Item_Turret_ammo_height = ""
+Item_Turret_ammo_lifetime = ""
+
+Item_Turret_requirements = ""
+Item_Turret_requirements_item = ""
+
+Item_Turret_category = ""
+Item_Turret_category_Str = ""
+Item_Turret_research = ""
+#液体
+liquid_steps = 0
+liquid_name = ""
+liquid_description = ""
+liquid_color = ""
+liquid_barColor = ""
+liquid_flammability = ""
+liquid_temperature = ""
+liquid_heatCapacity = ""
+liquid_viscosity = ""
+liquid_explosiveness = ""
 #函数
 def file_write(row,content,File_address):
+    """
+    Args:
+        row (_number_): _行数_
+        content (_content_): _内容_
+        File_address (_File_address_): _文件地址_
+    """
     File = open(File_address, 'r')
     File_contents = File.readlines()
     if (len(File_contents) < row ):
@@ -76,8 +133,18 @@ def file_write(row,content,File_address):
     pass
 def JSON_encoding(json_name,json_value,json_type,end):
     if (int(json_type) == 0):
+        #中文自动转换成Unicode编码
+        json_encode = (json_value.encode("unicode_escape"))
+        json_value = str(json_encode)[2 : len(str(json_encode))-1]
+        json_encode1 = json_value.split("\\\\")
+        json_value = ""
+        for json_num in range(len(json_encode1)):
+            json_value += json_encode1[json_num]+"\\"
+            pass
+        json_value = json_value[0 : len(json_value)-1]
         JSON_value_put_0 = '"'+json_name+'":'+'"'+json_value+'"'
         pass
+        #json编码
     if (int(json_type) == 1):
         JSON_value_put_0 = '"'+json_name+'":'+json_value
         pass
@@ -140,8 +207,10 @@ while True :
             test.write("true")
             os.makedirs(initialize_name + "\\content\\blocks")
             os.makedirs(initialize_name + "\\content\\items")
+            os.makedirs(initialize_name + "\\content\\liquids")
             os.makedirs(initialize_name + "\\sprites\\blocks")
             os.makedirs(initialize_name + "\\sprites\\items")
+            os.makedirs(initialize_name + "\\sprites\\liquids")
             pass
         test.close()
         test_1.close()
@@ -165,7 +234,7 @@ while True :
         create = 0
         pass
     elif (create == 2):
-        mod_type = int(input("物品:1 方块:2"))
+        mod_type = int(input("物品:1 方块:2  液体:3"))
         if (mod_type == 1):
             item_name = input("请输入物品名称:")
             item_description = input("请输入物品简介:")
@@ -209,7 +278,7 @@ while True :
             print("创建成功！")
             pass
         elif (mod_type == 2):
-            block_type = int(input("墙:1 矿石:2"))
+            block_type = int(input("墙:1 矿石:2 炮台:3"))
             if (block_type == 1):
                 block_wall_steps = 2
                 #名字
@@ -360,10 +429,238 @@ while True :
                     os.rename(Disposition+"\\sprites\\blocks\\"+(os.path.basename(file_name)),Disposition+"\\sprites\\blocks\\"+block_ore_name+str(Number_of_maps+1)+".png")
                     pass
                 file_write(block_ore_steps,"}",Disposition+"\\content\\blocks\\"+block_ore_name+".json")
+                pass
+            elif (block_type == 3):
+                #炮台制作（极为困难）
+                Turret_type = int(input("物品炮台:1 液体炮台:2"))
+                if (Turret_type == 1):
+                    #物品炮台
+                    #名字
+                    Item_Turret_steps = 3
+                    Item_Turret_name = input("请输入名字:")
+                    test = open(Disposition+"\\content\\blocks\\"+Item_Turret_name+".json",'w')
+                    test.close()
+                    file_write(Item_Turret_steps-2,"{",Disposition+"\\content\\blocks\\"+Item_Turret_name+".json")
+                    file_write(Item_Turret_steps-1,'"type": "ItemTurret",',Disposition+"\\content\\blocks\\"+Item_Turret_name+".json")
+                    file_write(Item_Turret_steps,JSON_encoding("name",Item_Turret_name,0,0),Disposition+"\\content\\blocks\\"+Item_Turret_name+".json")
+                    Item_Turret_steps += 1
+                    #简介
+                    Item_Turret_description = input("请输入简介:")
+                    file_write(Item_Turret_steps,JSON_encoding("description",Item_Turret_description,0,0),Disposition+"\\content\\blocks\\"+Item_Turret_name+".json")
+                    Item_Turret_steps += 1
+                    #炮台声音
+                    Item_Turret_shootSound = input("请输入炮台声音:")
+                    file_write(Item_Turret_steps,JSON_encoding("shootSound",Item_Turret_shootSound,0,0),Disposition+"\\content\\blocks\\"+Item_Turret_name+".json")
+                    Item_Turret_steps += 1
+                    #是否攻击空军
+                    Item_Turret_targetAirStr = input("是否攻击空军: 是:1 不是:2")
+                    if (Item_Turret_targetAirStr == "1"):
+                        Item_Turret_targetAir = "true"
+                        pass
+                    elif (Item_Turret_targetAirStr == "2"):
+                        Item_Turret_targetAir = "false"
+                        pass
+                    file_write(Item_Turret_steps,JSON_encoding("targetAir",Item_Turret_targetAir,1,0),Disposition+"\\content\\blocks\\"+Item_Turret_name+".json")
+                    Item_Turret_steps += 1
+                    #是否攻击陆军
+                    Item_Turret_targetGroundStr = input("是否攻击陆军: 是:1 不是:2")
+                    if (Item_Turret_targetGroundStr == "1"):
+                        Item_Turret_targetGround = "true"
+                        pass
+                    elif (Item_Turret_targetGroundStr == "2"):
+                        Item_Turret_targetGround = "false"
+                        pass
+                    file_write(Item_Turret_steps,JSON_encoding("targetGround",Item_Turret_targetGround,1,0),Disposition+"\\content\\blocks\\"+Item_Turret_name+".json")
+                    Item_Turret_steps += 1
+                    #血量
+                    Item_Turret_health = input("请输入血量:")
+                    file_write(Item_Turret_steps,JSON_encoding("health",Item_Turret_health,1,0),Disposition+"\\content\\blocks\\"+Item_Turret_name+".json")
+                    Item_Turret_steps += 1
+                    #射速
+                    Item_Turret_reloadTime = input("请输入射速:")
+                    file_write(Item_Turret_steps,JSON_encoding("reloadTime",Item_Turret_reloadTime,1,0),Disposition+"\\content\\blocks\\"+Item_Turret_name+".json")
+                    Item_Turret_steps += 1
+                    #尺寸
+                    Item_Turret_size = input("请输入尺寸:")
+                    file_write(Item_Turret_steps,JSON_encoding("size",Item_Turret_size,1,0),Disposition+"\\content\\blocks\\"+Item_Turret_name+".json")
+                    Item_Turret_steps += 1
+                    #炮口
+                    Item_Turret_shootCone = input("请输入炮口尺寸:")
+                    file_write(Item_Turret_steps,JSON_encoding("shootCone",Item_Turret_shootCone,1,0),Disposition+"\\content\\blocks\\"+Item_Turret_name+".json")
+                    Item_Turret_steps += 1
+                    #后坐力
+                    Item_Turret_recoilAmount = input("请输入后坐力:")
+                    file_write(Item_Turret_steps,JSON_encoding("recoilAmount",Item_Turret_recoilAmount,1,0),Disposition+"\\content\\blocks\\"+Item_Turret_name+".json")
+                    Item_Turret_steps += 1
+                    #弹夹容量
+                    Item_Turret_maxAmmo = input("请输入弹夹容量:")
+                    file_write(Item_Turret_steps,JSON_encoding("maxAmmo",Item_Turret_maxAmmo,1,0),Disposition+"\\content\\blocks\\"+Item_Turret_name+".json")
+                    Item_Turret_steps += 1
+                    #炮口转速
+                    Item_Turret_rotateSpeed = input("请输入炮口转速:")
+                    file_write(Item_Turret_steps,JSON_encoding("rotateSpeed",Item_Turret_rotateSpeed,1,0),Disposition+"\\content\\blocks\\"+Item_Turret_name+".json")
+                    Item_Turret_steps += 1
+                    #子弹偏移
+                    Item_Turret_inaccuracy = input("请输入子弹偏移:")
+                    file_write(Item_Turret_steps,JSON_encoding("inaccuracy",Item_Turret_inaccuracy,1,0),Disposition+"\\content\\blocks\\"+Item_Turret_name+".json")
+                    Item_Turret_steps += 1
+                    #检测范围
+                    Item_Turret_range = input("请输入炮台检测范围:")
+                    file_write(Item_Turret_steps,JSON_encoding("range",Item_Turret_range,1,0),Disposition+"\\content\\blocks\\"+Item_Turret_name+".json")
+                    Item_Turret_steps += 1
+                    #子弹部分（困难）
+                    file_write(Item_Turret_steps,'"ammoTypes":{',Disposition+"\\content\\blocks\\"+Item_Turret_name+".json")
+                    Item_Turret_steps += 1
+                    while Item_Turret_jump:
+                        #子弹物品
+                        Item_Turret_ammo_item = input("请输入子弹物品")
+                        file_write(Item_Turret_steps,'"'+Item_Turret_ammo_item+'":{',Disposition+"\\content\\blocks\\"+Item_Turret_name+".json")
+                        Item_Turret_steps += 1
+                        #射速
+                        Item_Turret_ammo_speed = input("请输入子弹射速")
+                        file_write(Item_Turret_steps,JSON_encoding("speed",Item_Turret_ammo_speed,1,0),Disposition+"\\content\\blocks\\"+Item_Turret_name+".json")
+                        Item_Turret_steps += 1
+                        #伤害
+                        Item_Turret_ammo_damage = input("请输入子弹伤害")
+                        file_write(Item_Turret_steps,JSON_encoding("damage",Item_Turret_ammo_damage,1,0),Disposition+"\\content\\blocks\\"+Item_Turret_name+".json")
+                        Item_Turret_steps += 1
+                        #子弹宽度
+                        Item_Turret_ammo_width = input("请输入子弹宽度")
+                        file_write(Item_Turret_steps,JSON_encoding("width",Item_Turret_ammo_width,1,0),Disposition+"\\content\\blocks\\"+Item_Turret_name+".json")
+                        Item_Turret_steps += 1
+                        #子弹高度
+                        Item_Turret_ammo_height = input("请输入子弹高度")
+                        file_write(Item_Turret_steps,JSON_encoding("height",Item_Turret_ammo_height,1,0),Disposition+"\\content\\blocks\\"+Item_Turret_name+".json")
+                        Item_Turret_steps += 1
+                        #子弹存在时间
+                        Item_Turret_ammo_lifetime = input("请输入子弹存在时间")
+                        file_write(Item_Turret_steps,JSON_encoding("lifetime",Item_Turret_ammo_lifetime,1,1),Disposition+"\\content\\blocks\\"+Item_Turret_name+".json")
+                        Item_Turret_steps += 1
+                        #结尾
+                        file_write(Item_Turret_steps,'},',Disposition+"\\content\\blocks\\"+Item_Turret_name+".json")
+                        Item_Turret_steps += 1
+                        Item_Turret_jumpStr = input("是否继续添加 继续:1 不:2")
+                        if (Item_Turret_jumpStr == "1"):
+                            Item_Turret_jump = True
+                            print("继续")
+                        elif (Item_Turret_jumpStr == "2"):
+                            Item_Turret_jump = False
+                            file_write(Item_Turret_steps,'},',Disposition+"\\content\\blocks\\"+Item_Turret_name+".json")
+                            Item_Turret_steps += 1
+                            print("取消")
+                            break
+                    #物品消耗
+                    file_write(Item_Turret_steps,'"requirements": [',Disposition+"\\content\\blocks\\"+Item_Turret_name+".json")
+                    Item_Turret_steps +=1
+                    while Item_Turret_jump_item:
+                        Item_Turret_requirements_item = input("请输入消耗的物品:")
+                        Item_Turret_requirements = input("请输入要消耗的数量")
+                        file_write(Item_Turret_steps,'"'+Item_Turret_requirements_item+'/'+Item_Turret_requirements+'",',Disposition+"\\content\\blocks\\"+Item_Turret_name+".json")
+                        Item_Turret_steps +=1
+                        Item_Turret_jump_item_Str = input("是否继续添加: 是:1 否:2 ")
+                        if (Item_Turret_jump_item_Str == "1"):
+                            Item_Turret_jump_item = True
+                        elif (Item_Turret_jump_item_Str == "2"):
+                            Item_Turret_jump_item = False
+                            file_write(Item_Turret_steps,"],",Disposition+"\\content\\blocks\\"+Item_Turret_name+".json")
+                            Item_Turret_steps +=1
+                            break
+                    #界面分类
+                    Item_Turret_category_Str = (input("请输入分类子页面:\n炮塔子页面:1 钻头子页面:2 墙子页面:3 电力子页面:4\n逻辑子页面:5 单位子页面:6 液体子页面:7 传送带子页面:8\n 修复仪子页面:9"))
+                    if (Item_Turret_category_Str == "1"):
+                        Item_Turret_category = "turret"
+                        pass
+                    elif (Item_Turret_category_Str == "2"):
+                        Item_Turret_category = "production"
+                        pass
+                    elif (Item_Turret_category_Str == "3"):
+                        Item_Turret_category = "defense"
+                        pass
+                    elif (Item_Turret_category_Str == "4"):
+                        Item_Turret_category = "power"
+                        pass
+                    elif (Item_Turret_category_Str == "5"):
+                        Item_Turret_category = "logic"
+                        pass
+                    elif (Item_Turret_category_Str == "6"):
+                        Item_Turret_category = "units"
+                        pass
+                    elif (Item_Turret_category_Str == "7"):
+                        Item_Turret_category = "liquid"
+                        pass
+                    elif (Item_Turret_category_Str == "8"):
+                        Item_Turret_category = "distribution"
+                        pass
+                    elif (Item_Turret_category_Str == "9"):
+                        Item_Turret_category = "effect"
+                        pass
+                    file_write(Item_Turret_steps,JSON_encoding("category",Item_Turret_category,0,0),Disposition+"\\content\\blocks\\"+Item_Turret_name+".json")
+                    Item_Turret_steps +=1
+                    #科技树
+                    Item_Turret_research = input("请输入研究:")
+                    file_write(Item_Turret_steps,JSON_encoding("research",Item_Turret_research,0,1),Disposition+"\\content\\blocks\\"+Item_Turret_name+".json")
+                    Item_Turret_steps += 1
+                    #结尾
+                    file_write(Item_Turret_steps,"}",Disposition+"\\content\\blocks\\"+Item_Turret_name+".json")
+                    print("请选择炮台贴图")
+                    file_name = filedialog.askopenfilename()
+                    shutil.copy(file_name,Disposition+"\\sprites\\blocks")
+                    os.rename(Disposition+"\\sprites\\blocks\\"+(os.path.basename(file_name)),Disposition+"\\sprites\\blocks\\"+Item_Turret_name+".png")
+                    print("生成完毕")
+                    pass
+                pass
+        elif (mod_type == 3):
+            liquid_steps = 2
+            #名字
+            liquid_name = input("请输入名字:")
+            test = open(Disposition+"\\content\\liquids\\"+liquid_name+".json",'w')
+            test.close()
+            file_write(liquid_steps-1,"{",Disposition+"\\content\\liquids\\"+liquid_name+".json")
+            file_write(liquid_steps,JSON_encoding("name",liquid_name,0,0),Disposition+"\\content\\liquids\\"+liquid_name+".json")
+            liquid_steps += 1
+            #简介
+            liquid_description = input("请输入简介:")
+            file_write(liquid_steps,JSON_encoding("description",liquid_description,0,0),Disposition+"\\content\\liquids\\"+liquid_name+".json")
+            liquid_steps += 1
+            #颜色
+            liquid_color = input("请输入颜色:")
+            file_write(liquid_steps,JSON_encoding("color",liquid_color,0,0),Disposition+"\\content\\liquids\\"+liquid_name+".json")
+            liquid_steps += 1
+            #颜色条
+            liquid_barColor = input("请输入颜色条:")
+            file_write(liquid_steps,JSON_encoding("barcolor",liquid_barColor,0,0),Disposition+"\\content\\liquids\\"+liquid_name+".json")
+            liquid_steps += 1
+            #流速
+            liquid_viscosity = input("请输入流速:")
+            file_write(liquid_steps,JSON_encoding("viscosity",liquid_viscosity,1,0),Disposition+"\\content\\liquids\\"+liquid_name+".json")
+            liquid_steps += 1
+            #爆炸性
+            liquid_explosiveness = input("请输入爆炸性:")
+            file_write(liquid_steps,JSON_encoding("explosiveness",liquid_explosiveness,1,0),Disposition+"\\content\\liquids\\"+liquid_name+".json")
+            liquid_steps += 1
+            #易燃性
+            liquid_flammability = input("请输入易燃性:")
+            file_write(liquid_steps,JSON_encoding("flammability",liquid_flammability,1,0),Disposition+"\\content\\liquids\\"+liquid_name+".json")
+            liquid_steps += 1
+            #温度
+            liquid_temperature = input("请输入温度:")
+            file_write(liquid_steps,JSON_encoding("temperature",liquid_temperature,1,0),Disposition+"\\content\\liquids\\"+liquid_name+".json")
+            liquid_steps += 1
+            #热比容
+            liquid_heatCapacity = input("请输入热比容:")
+            file_write(liquid_steps,JSON_encoding("heatCapacity",liquid_heatCapacity,1,1),Disposition+"\\content\\liquids\\"+liquid_name+".json")
+            liquid_steps += 1
+            #结尾
+            print("请选择液体贴图:")
+            file_name = filedialog.askopenfilename()
+            shutil.copy(file_name,Disposition+"\\sprites\\liquids")
+            os.rename(Disposition+"\\sprites\\liquids\\"+(os.path.basename(file_name)),Disposition+"\\sprites\\liquids\\"+liquid_name+".png")
+            file_write(liquid_steps,"}",Disposition+"\\content\\liquids\\"+liquid_name+".json")
+            print("生成完毕")
             pass
-        pass
     elif (create == 3):
         File_askdirectory = filedialog.askdirectory()
         zipDir(Disposition,File_askdirectory+'\\'+Disposition+".zip")
+        print("导出成功")
         pass
-    
+
